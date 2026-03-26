@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personal Budget Tracker — Live preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #0f1419;
+      color: #e7e9ea;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 0.75rem 1rem;
+      background: #1a2332;
+      border-bottom: 1px solid #2f3d52;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    header a {
+      color: #6db3f2;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+    header a:hover { text-decoration: underline; }
+    .frame-wrap {
+      flex: 1;
+      min-height: 70vh;
+      padding: 0;
+    }
+    iframe {
+      width: 100%;
+      height: calc(100vh - 52px);
+      border: 0;
+      background: #fff;
+    }
+    .note {
+      padding: 1rem;
+      font-size: 0.875rem;
+      color: #8b98a5;
+      max-width: 52rem;
+      line-height: 1.5;
+    }
+    .note code { background: #2f3d52; padding: 0.1em 0.35em; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Personal Budget Tracker</h1>
+    <a id="download" href="Personal_Budget_Tracker.xlsx" download>Download .xlsx</a>
+    <a id="repo" href="#" style="display:none">View on GitHub</a>
+  </header>
+  <div class="frame-wrap">
+    <iframe id="viewer" title="Excel workbook preview" src="about:blank"></iframe>
+  </div>
+  <p class="note" id="fallback" style="display:none">
+    Could not build a preview URL. Open the repository on GitHub, use
+    <strong>Download .xlsx</strong> above, or open the file in Excel / Google Sheets.
+    For Pages, ensure the repo is <strong>public</strong> and the default branch matches
+    <code id="branchHint">main</code>.
+  </p>
+  <script>
+    (function () {
+      var branch = "main";
+      var workbookFile = "Personal_Budget_Tracker.xlsx";
+
+      var iframe = document.getElementById("viewer");
+      var fallback = document.getElementById("fallback");
+      var branchHint = document.getElementById("branchHint");
+      var repoLink = document.getElementById("repo");
+      if (branchHint) branchHint.textContent = branch;
+
+      var rawUrl = null;
+      var h = location.hostname;
+      var pathParts = location.pathname.replace(/^\/+|\/+$/g, "").split("/");
+
+      if (h.endsWith(".github.io") && pathParts.length >= 1) {
+        var user = h.split(".")[0];
+        var repo = pathParts[0];
+        rawUrl =
+          "https://raw.githubusercontent.com/" +
+          encodeURIComponent(user) +
+          "/" +
+          encodeURIComponent(repo) +
+          "/" +
+          branch +
+          "/" +
+          encodeURIComponent(workbookFile);
+        repoLink.href = "https://github.com/" + user + "/" + repo;
+        repoLink.style.display = "inline";
+        repoLink.textContent = "View on GitHub";
+      }
+
+      if (rawUrl) {
+        var viewerUrl =
+          "https://view.officeapps.live.com/op/embed.aspx?src=" +
+          encodeURIComponent(rawUrl);
+        iframe.src = viewerUrl;
+      } else {
+        iframe.style.display = "none";
+        fallback.style.display = "block";
+      }
+    })();
+  </script>
+</body>
+</html>
